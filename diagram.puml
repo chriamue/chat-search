@@ -1,0 +1,18 @@
+@startuml diagram
+
+actor User
+
+component SearchEngine
+component text_davinci_003
+component DuckDuckGo_Search_API
+
+User -> SearchEngine : Enter search query
+SearchEngine -> text_davinci_003 : Generate search string
+text_davinci_003 --> SearchEngine : Search string
+SearchEngine -> DuckDuckGo_Search_API : Search query
+DuckDuckGo_Search_API --> SearchEngine : Search results
+SearchEngine -> text_davinci_003 : Select relevant results
+text_davinci_003 --> SearchEngine : Relevant results
+SearchEngine -> User : Display results
+
+@enduml

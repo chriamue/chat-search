@@ -2,6 +2,8 @@
 
 Chat Search is a natural language search engine that uses OpenAI's text-davinci-003 model and the DuckDuckGo Search API to provide relevant search results to users.
 
+![Diagram](https://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.github.com/chriamue/chat-search/main/diagram.puml)
+
 ## Features
 
 - Natural language queries: Chat Search allows users to enter their search queries in the form of a question or statement, using natural language rather than specific keywords.
