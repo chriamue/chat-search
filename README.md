@@ -27,6 +27,10 @@ Chat Search is a natural language search engine that uses OpenAI's text-davinci-
 
 3. Open the app in your browser by opening the `index.html` file.
 
+```sh
+python3 -m http.server
+```
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
