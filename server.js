@@ -1,7 +1,7 @@
 const express = require("express");
 const { Configuration, OpenAIApi } = require("openai");
 const dotenv = require("dotenv");
-const fetch = require('node-fetch');
+const fetch = require("node-fetch");
 
 dotenv.config();
 
@@ -21,20 +21,28 @@ app.get("/api/search", async (req, res) => {
 
   // Use the OpenAI API to generate a search query
   const completion = await openai.createCompletion({
-    prompt: `Generate a search query based on the following: ${query}`,
-    model: "text-davinci-002",
+    prompt: `Generate a search query for duckduckgo based on the following: ${query}`,
+    model: "text-davinci-003",
   });
 
   // Extract the generated search query from the response
   const generatedQuery = encodeURIComponent(completion.data.choices[0].text);
   const duckduckgo = `https://api.duckduckgo.com/?q=${generatedQuery}&format=json`;
-
   // Use the generated search query to search the DuckDuckGo API
   const searchResponse = await fetch(duckduckgo);
   const searchData = await searchResponse.json();
 
+  let results = [];
+  results = searchData.Results;
+  if (results.length < 1 && searchData.RelatedTopics) {
+    for (let element of searchData.RelatedTopics.values()) {
+      if (element.Result) {
+        results.push(element.Result);
+      }
+    }
+  }
   // Extract the top 3 relevant results from the search data
-  const relevantResults = await selectRelevantResults(query, searchData.Results);
+  const relevantResults = await selectRelevantResults(query, results);
 
   // Send the relevant results back to the client as the response
   res.send({ relevantResults });
@@ -43,7 +51,7 @@ app.get("/api/search", async (req, res) => {
 async function selectRelevantResults(query, results) {
   // Use the OpenAI API to select the most relevant results
   const response = await openai.createCompletion({
-    prompt: `answer the query \"${query}\" using following information: ${results}`,
+    prompt: `answer the query \"${query}\" using following updated information: ${results}`,
     model: "text-davinci-003",
     max_tokens: 400,
   });
