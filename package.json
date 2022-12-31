@@ -1,0 +1,31 @@
+{
+  "name": "chat-search",
+  "version": "1.0.0",
+  "description": "Chat Search is a natural language search engine that uses OpenAI's text-davinci-003 model and the DuckDuckGo Search API to provide relevant search results to users.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chriamue/chat-search.git"
+  },
+  "keywords": [
+    "search-query",
+    "openai",
+    "web-page",
+    "dialogue"
+  ],
+  "author": "Christian M",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/chriamue/chat-search/issues"
+  },
+  "homepage": "https://github.com/chriamue/chat-search#readme",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "node-fetch": "^2.6.7",
+    "openai": "^3.1.0"
+  }
+}
