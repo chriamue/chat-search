@@ -1,115 +1,47 @@
-async function search(query) {
-  // Use the fetch API to send a request to the DuckDuckGo API
-  const response = await fetch(
-    `https://api.duckduckgo.com/?q=${query}&format=json`
-  );
+// Get the search form element
+const searchForm = document.getElementById('search-form');
 
-  // Check the status of the response
-  if (response.ok) {
-    // If the response is successful, parse the JSON data
-    const data = await response.json();
-    // Extract the search results from the data
-    const searchResults = data.Results;
-    // Return the search results
-    return searchResults;
-  } else {
-    // If the response is not successful, throw an error
-    throw new Error("Failed to search");
-  }
-}
+// Get the query input element
+const queryInput = document.getElementById('query');
 
-async function selectRelevantResults(results) {
-  // Convert the search results into a string
-  const resultsString = results.map((result) => result.Text).join("\n");
+// Get the results container element
+const resultsContainer = document.getElementById('results');
 
-  // Use the fetch API to send a request to the OpenAI API
-  const response = await fetch("https://api.openai.com/v1/text-davinci-003", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer YOUR_API_KEY",
-    },
-    body: JSON.stringify({
-      prompt: `Select the three most relevant results from the following list: \n${resultsString}`,
-      model: "text-davinci-003",
-      max_tokens: 0,
-    }),
-  });
-
-  // Check the status of the response
-  if (response.ok) {
-    // If the response is successful, parse the JSON data
-    const data = await response.json();
-    // Extract the selected results from the data
-    const selectedResults = data.choices[0].text.split("\n").slice(1);
-    // Return the selected results
-    return selectedResults;
-  } else {
-    // If the response is not successful, throw an error
-    throw new Error("Failed to select relevant results");
-  }
-}
-
-function showResults(results) {
-  // Get the results container element
-  const resultsContainer = document.getElementById("results");
-
-  // Clear the contents of the container
-  resultsContainer.innerHTML = "";
-
-  // Iterate over the results
-  for (const result of results) {
-    // Create a new list item for the result
-    const resultItem = document.createElement("li");
-    resultItem.innerText = result;
-
-    // Add the list item to the container
-    resultsContainer.appendChild(resultItem);
-  }
-}
-
+// Handle the search form submit event
 async function handleSearch(event) {
-  // Prevent the form from submitting
   event.preventDefault();
 
-  // Get the search query from the form
-  const query = document.getElementById("query").value;
+  // Get the search query from the input
+  const query = queryInput.value;
 
-  // Use the fetch API to send a request to the OpenAI API to generate a search query
-  const response = await fetch("https://api.openai.com/v1/text-davinci-003", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer YOUR_API_KEY",
-    },
-    body: JSON.stringify({
-      prompt: `Generate a search query based on the following: ${query}`,
-      model: "text-davinci-003",
-      max_tokens: 0,
-    }),
-  });
+  // Make a request to the server to generate a search query and select the relevant results
+  const response = await fetch(`/api/search?q=${query}`);
+  const data = await response.json();
 
-  // Check the status of the response
-  if (response.ok) {
-    // If the response is successful, parse the JSON data
-    const data = await response.json();
-    // Extract the generated search query from the data
-    const generatedQuery = data.choices[0].text;
-
-    // Send a request to the DuckDuckGo API to search for the generated query
-    const searchResults = await search(generatedQuery);
-
-    // Select the three most relevant results from the search results
-    const relevantResults = await selectRelevantResults(searchResults);
-
-    // Display the selected relevant results on the page
-    showResults(relevantResults);
-  } else {
-    // If the response is not successful, throw an error
-    throw new Error("Failed");
-  }
+  // Get the relevant results from the response
+  const relevantResults = data.relevantResults;
+  console.log(relevantResults);
+  // Show the relevant results on the page
+  showResults([relevantResults]);
 }
 
-// Add an event listener for the search form submission
-const searchForm = document.getElementById('search-form');
 searchForm.addEventListener('submit', handleSearch);
+
+// Show the results on the page
+function showResults(results) {
+  // Clear the results container
+  resultsContainer.innerHTML = '';
+
+  // Iterate over the results
+  results.forEach(result => {
+    // Create a new list item element for the result
+    const li = document.createElement('li');
+    li.classList.add('list-group-item');
+
+    // Set the text of the list item to the result
+    li.textContent = result;
+
+    // Append the list item to the results container
+    resultsContainer.appendChild(li);
+  });
+}
